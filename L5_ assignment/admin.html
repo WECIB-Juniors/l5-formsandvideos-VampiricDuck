@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Admin - CAPTCHA Submissions</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f9fc; color:#222 }
+        h1 { color:#333 }
+        table { width:100%; border-collapse: collapse; margin-top: 10px }
+        th, td { border:1px solid #ddd; padding:8px; text-align:left; font-size:0.95em }
+        th { background:#f0f0f0 }
+        .controls { margin: 10px 0 }
+        button { padding:8px 12px; border-radius:6px; border:1px solid #ccc; background:white; cursor:pointer }
+        .danger { background:#ffdddd; border-color:#ff9999 }
+    </style>
+</head>
+<body>
+    <h1>Stored CAPTCHA Submissions</h1>
+    <div class="controls">
+        <button id="refreshBtn">Refresh</button>
+        <button id="clearBtn" class="danger">Clear All</button>
+    </div>
+    <div id="noData">No submissions found.</div>
+    <table id="subTable" style="display:none">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Purpose</th>
+                <th>Captcha1</th>
+                <th>Captcha2</th>
+                <th>Score</th>
+                <th>Attempts</th>
+                <th>Result</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody id="subBody"></tbody>
+    </table>
+
+    <script>
+        const key = 'submissions';
+        const subBody = document.getElementById('subBody');
+        const subTable = document.getElementById('subTable');
+        const noData = document.getElementById('noData');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        function load() {
+            subBody.innerHTML = '';
+            let items = [];
+            try { items = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { items = []; }
+            if (!items || items.length === 0) {
+                subTable.style.display = 'none';
+                noData.style.display = 'block';
+                return;
+            }
+            // show table
+            subTable.style.display = 'table';
+            noData.style.display = 'none';
+            // sort newest first
+            items.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            items.forEach(it => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date(it.timestamp).toLocaleString()}</td>
+                    <td>${escapeHtml(it.name)}</td>
+                    <td>${escapeHtml(it.email)}</td>
+                    <td>${escapeHtml(it.purpose)}</td>
+                    <td>${escapeHtml(it.captcha1)}</td>
+                    <td>${escapeHtml(it.captcha2)}</td>
+                    <td>${escapeHtml(it.lockScore)}</td>
+                    <td>${escapeHtml(it.lockAttempts)}</td>
+                    <td>${escapeHtml(it.lockResult)}</td>
+                    <td>${escapeHtml(it.comments)}</td>
+                `;
+                subBody.appendChild(tr);
+            });
+        }
+
+        function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+        refreshBtn.addEventListener('click', load);
+        clearBtn.addEventListener('click', function(){ if(confirm('Clear all stored submissions?')){ localStorage.removeItem(key); load(); }});
+
+        load();
+    </script>
+</body>
+</html>

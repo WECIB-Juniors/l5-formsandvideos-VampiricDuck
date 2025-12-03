@@ -3,24 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L5 Assignment</title>
+    <title>L5 Assignment - Image CAPTCHA Form</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Author: Student, Date: December 3, 2025 -->
 </head>
 <body>
-    <form class="Captcha" method="post">
-        <h2>You human??</h2>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+    <header>
+        <h1>🤖 Advanced CAPTCHA Verification 🤖</h1>
+        <p class="subtitle">Prove you're human with image and lock challenges</p>
+    </header>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+    <main>
+        <section class="intro">
+            <p>This form combines traditional CAPTCHA techniques (warped text images) with an interactive lock game to verify you're human!</p>
+        </section>
 
-        <label for="message">Message:</label><br>
-        <textarea id="message" name="message" minlength="50" required></textarea><br><br>
+        <!-- Form using POST method to httpbin.org for testing -->
+        <form method="POST" action="https://httpbin.org/post" class="captcha-form">
+            <!-- POST method chosen: allows secure submission and can handle larger form data -->
 
-        <input type="submit" value="Submit">
-    </form>
-    <video autoplay controls width="720" height="480">
-        <source src="./videos/coffee.mp4" type="video/mp4" />
-    </video>
+            <!-- Personal Information Section -->
+            <section class="form-section info-section">
+                <h2>Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required pattern="[A-Za-z\s]+" minlength="2" placeholder="Enter your full name">
+                    <small>Letters and spaces only, at least 2 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                    <small>Must be a valid email address</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="purpose">Purpose of Visit:</label>
+                    <select id="purpose" name="purpose" required>
+                        <option value="">-- Select an option --</option>
+                        <option value="verification">Verification</option>
+                        <option value="testing">Testing</option>
+                        <option value="learning">Learning</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label for="agree">
+                        <input type="checkbox" id="agree" name="agree" required> I agree to complete this CAPTCHA honestly
+                    </label>
+                </div>
+            </section>
+
+            <!-- Level 1: Warped Text Image CAPTCHA -->
+            <section class="form-section puzzle-section level-1">
+                <div class="level-indicator">Level 1</div>
+                <h2>Level 1: Read the Warped Text</h2>
+                <p class="puzzle-description">Enter the characters shown in the distorted image below:</p>
+                
+                <div class="captcha-image-container">
+                    <svg id="captchaImage1" width="300" height="120" viewBox="0 0 300 120">
+                        <!-- Background noise -->
+                        <defs>
+                            <filter id="warp">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise" seed="2"/>
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="8"/>
+                            </filter>
+                        </defs>
+                        <rect width="300" height="120" fill="#f0f0f0" stroke="#999" stroke-width="2"/>
+                        
+                        <!-- Noise lines for distraction -->
+                        <line x1="10" y1="30" x2="290" y2="80" stroke="#ddd" stroke-width="1" opacity="0.7"/>
+                        <line x1="20" y1="90" x2="270" y2="20" stroke="#ddd" stroke-width="1" opacity="0.7"/>
+                        <circle cx="80" cy="60" r="15" fill="none" stroke="#ddd" stroke-width="1" opacity="0.5"/>
+                        <circle cx="220" cy="70" r="20" fill="none" stroke="#ddd" stroke-width="1" opacity="0.5"/>
+                        
+                        <!-- Warped text (SVG text with transform) - soft distorted text only -->
+                        <text x="150" y="75" font-size="48" font-weight="bold" font-family="Arial" fill="#ccc" text-anchor="middle" 
+                              transform="skewY(-10) rotate(-5)" filter="url(#warp)" letter-spacing="8" opacity="0.5">K7M2P</text>
+                    </svg>
+                </div>
+                
+                <div class="form-group">
+                    <label for="captcha1">Enter the characters:</label>
+                    <input type="text" id="captcha1" name="captcha1" required maxlength="5" style="letter-spacing: 4px; font-size: 1.2em; font-weight: bold; text-transform: uppercase;">
+                    <small>Read the distorted text from the image</small>
+                </div>
+            </section>
+
+            <!-- Level 2: Different Warped Text Image -->
+            <section class="form-section puzzle-section level-2">
+                <div class="level-indicator">Level 2</div>
+                <h2>Level 2: Read Another Warped Text</h2>
+                <p class="puzzle-description">Enter the characters shown in the distorted image below:</p>
+                
+                <div class="captcha-image-container">
+                    <svg id="captchaImage2" width="300" height="120" viewBox="0 0 300 120">
+                        <defs>
+                            <filter id="warp2">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="5"/>
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10"/>
+                            </filter>
+                        </defs>
+                        <rect width="300" height="120" fill="#f5f5f5" stroke="#999" stroke-width="2"/>
+                        
+                        <!-- Noise elements -->
+                        <polygon points="50,30 80,80 30,90" fill="none" stroke="#ddd" stroke-width="1" opacity="0.6"/>
+                        <rect x="200" y="20" width="60" height="50" fill="none" stroke="#ddd" stroke-width="1" opacity="0.5" transform="rotate(20 230 45)"/>
+                        
+                        <!-- Warped text - soft distorted text only -->
+                        <text x="150" y="70" font-size="52" font-weight="bold" font-family="Courier New" fill="#ccc" text-anchor="middle"
+                              transform="skewX(-8) scaleY(1.1)" filter="url(#warp2)" letter-spacing="6" opacity="0.5">3B9WX</text>
+                    </svg>
+                </div>
+                
+                <div class="form-group">
+                    <label for="captcha2">Enter the characters:</label>
+                    <input type="text" id="captcha2" name="captcha2" required maxlength="5" style="letter-spacing: 4px; font-size: 1.2em; font-weight: bold; text-transform: uppercase;">
+                    <small>Read the distorted text from the image</small>
+                </div>
+            </section>
+
+            <!-- Level 3: Lock Circle Game -->
+            <section class="form-section puzzle-section level-3">
+                <div class="level-indicator">Level 3</div>
+                <h2>🔴 Level 3: Unlock the Circle 🔴</h2>
+                <p class="puzzle-description">Timing game: lower score is better (humans tend to score low). An AI would score about 90% (≈9/10).</p>
+                
+                <div class="lock-game-container">
+                    <div class="lock-circle-wrapper">
+                        <svg id="lockCircle" width="220" height="220" viewBox="0 0 220 220">
+                            <!-- Background circle -->
+                            <circle cx="110" cy="110" r="100" fill="none" stroke="#ddd" stroke-width="3"/>
+                            
+                            <!-- Lock icon in center -->
+                            <g id="lockIcon" transform="translate(110, 110)">
+                                <rect x="-15" y="-8" width="30" height="20" rx="3" fill="none" stroke="#667eea" stroke-width="2"/>
+                                <circle cx="0" cy="-15" r="12" fill="none" stroke="#667eea" stroke-width="2"/>
+                                <line x1="0" y1="8" x2="0" y2="15" stroke="#667eea" stroke-width="2"/>
+                            </g>
+                            
+                            <!-- Rotating line indicator -->
+                            <line id="rotatingLine" x1="110" y1="110" x2="110" y2="15" stroke="#ff6b6b" stroke-width="3" stroke-linecap="round"/>
+                            
+                            <!-- Target zone (lock position at top) -->
+                            <circle cx="110" cy="15" r="8" fill="none" stroke="#28a745" stroke-width="2" stroke-dasharray="3,2"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="lock-game-info">
+                        <p id="lockStatus">Click "Start" to begin the timing game</p>
+                        <button type="button" id="readyButton" class="lock-btn">Start</button>
+                        <button type="button" id="clickButton" class="lock-btn" style="display: none; background: #ff6b6b; border-color: #ff6b6b;">Click!</button>
+                    
+                                        <div id="gameStats">
+                                            <p>Attempts: <span id="attemptCount">0</span>/10</p>
+                                            <p>Accuracy: <span id="accuracyDisplay">--</span></p>
+                                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <input type="hidden" id="lockResult" name="lockResult" value="">
+                    <input type="hidden" id="lockScore" name="lockScore" value="">
+                    <input type="hidden" id="lockAttempts" name="lockAttempts" value="">
+                    <div id="lockFeedback" class="lock-feedback" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Comments Section -->
+            <section class="form-section">
+                <h2>Additional Comments</h2>
+                <div class="form-group">
+                    <label for="comments">How did you find this CAPTCHA?</label>
+                    <textarea id="comments" name="comments" rows="4" minlength="10" placeholder="Share your thoughts (at least 10 characters)..."></textarea>
+                    <small>Minimum 10 characters</small>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Submit CAPTCHA</button>
+                <button type="reset" class="reset-btn">Reset All Levels</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Video Section (video only, no text or captions) -->
+    <section class="video-section">
+        <video width="720" height="480" controls>
+            <source src="../videos/coffee.mp4" type="video/mp4">
+            Your browser does not support the video tag. Please use a modern browser to view the video.
+        </video>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 CTI-110 L5 Assignment | Advanced Image CAPTCHA Form</p>
+    </footer>
+
+    <script>
+        // Lock Circle Timing Game Logic
+        const readyButton = document.getElementById('readyButton');
+        const clickButton = document.getElementById('clickButton');
+        const lockStatus = document.getElementById('lockStatus');
+        const rotatingLine = document.getElementById('rotatingLine');
+        const lockResult = document.getElementById('lockResult');
+        const lockFeedback = document.getElementById('lockFeedback');
+        const form = document.querySelector('.captcha-form');
+        const attemptCount = document.getElementById('attemptCount');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+        
+        let gameActive = false;
+        let rotation = 0;
+        let direction = 1;
+        let speed = 2;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let score = 0;
+        const targetZone = 15;
+        const targetAngle = 0;
+        let animationId = null;
+        
+        readyButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            readyButton.style.display = 'none';
+            clickButton.style.display = 'inline-block';
+            gameActive = true;
+            attempts = 0;
+            score = 0;
+            rotation = 0;
+            direction = 1;
+            speed = 2;
+            lockStatus.textContent = 'Click when the line reaches the lock!';
+            attemptCount.textContent = '0/10';
+            accuracyDisplay.textContent = '--';
+            animateLine();
+        });
+        
+        function animateLine() {
+            if (!gameActive) return;
+            rotation += speed * direction;
+            rotation = ((rotation % 360) + 360) % 360;
+            rotatingLine.setAttribute('transform', `rotate(${rotation} 110 110)`);
+            animationId = requestAnimationFrame(animateLine);
+        }
+        
+        clickButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!gameActive) return;
+                    attempts++;
+                    attemptCount.textContent = attempts + '/10';
+                    let normalizedRotation = ((rotation % 360) + 360) % 360;
+                    let distanceFromTarget = Math.abs(normalizedRotation - targetAngle);
+                    if (distanceFromTarget > 180) distanceFromTarget = 360 - distanceFromTarget;
+            
+                    if (distanceFromTarget <= targetZone) {
+                        score++;
+                        clickButton.style.background = '#28a745';
+                        lockStatus.textContent = '✓ Great timing! (' + score + '/' + maxAttempts + ')';
+                        speed += 1;
+                        direction *= -1;
+                    } else {
+                        clickButton.style.background = '#dc3545';
+                        let accuracy = Math.round(((targetZone - distanceFromTarget) / targetZone) * 100);
+                        accuracy = Math.max(0, accuracy);
+                        lockStatus.textContent = '✗ Miss! Accuracy: ' + accuracy + '% (' + score + '/' + maxAttempts + ')';
+                    }
+            
+                    setTimeout(() => { clickButton.style.background = ''; }, 200);
+            
+                    if (attempts >= maxAttempts) {
+                        endGame();
+                    }
+                });
+        
+                function endGame() {
+                    gameActive = false;
+                    if (animationId) cancelAnimationFrame(animationId);
+                    clickButton.disabled = true;
+                    const accuracy = Math.round((score / maxAttempts) * 100);
+                    accuracyDisplay.textContent = accuracy + '%';
+
+                    // Inverted logic: LOW score => human (pass). HIGH score => bot (fail).
+                    if (score <= 3) {
+                        // Low score: pass as human
+                        lockStatus.textContent = '✓ Human verified! Low score: ' + score + '/10 (' + accuracy + '%)';
+                        lockFeedback.classList.remove('failed');
+                        lockFeedback.classList.add('success');
+                        lockFeedback.style.display = 'block';
+                        lockFeedback.textContent = '✓ Low score—likely human. Score: ' + score + '/10.';
+                        lockResult.value = 'success';
+                        // record score and attempts
+                        const lockScoreEl = document.getElementById('lockScore');
+                        const lockAttemptsEl = document.getElementById('lockAttempts');
+                        if (lockScoreEl) lockScoreEl.value = score;
+                        if (lockAttemptsEl) lockAttemptsEl.value = attempts;
+                        readyButton.style.display = 'inline-block';
+                        readyButton.disabled = true;
+                        readyButton.textContent = '✓ Verified';
+                        readyButton.classList.add('success');
+                    } else if (score <= 6) {
+                        // Middle range: suspicious — allow retry
+                        lockStatus.textContent = '⚠ Borderline score: ' + score + '/10 (' + accuracy + '%)';
+                        lockFeedback.classList.remove('success');
+                        lockFeedback.classList.add('failed');
+                        lockFeedback.style.display = 'block';
+                        lockFeedback.textContent = '⚠ Borderline timing. Try again if you are human. Score: ' + score + '/10.';
+                        readyButton.style.display = 'inline-block';
+                        readyButton.textContent = 'Try Again';
+                        readyButton.disabled = false;
+                        // set values for record (if user retries they won't be saved until success)
+                        const lockScoreEl2 = document.getElementById('lockScore');
+                        const lockAttemptsEl2 = document.getElementById('lockAttempts');
+                        if (lockScoreEl2) lockScoreEl2.value = score;
+                        if (lockAttemptsEl2) lockAttemptsEl2.value = attempts;
+                    } else {
+                        // High score: likely bot
+                        lockStatus.textContent = '✗ Bot-like behavior detected. High score: ' + score + '/10 (' + accuracy + '%)';
+                        lockFeedback.classList.remove('success');
+                        lockFeedback.classList.add('failed');
+                        lockFeedback.style.display = 'block';
+                        lockFeedback.textContent = '✗ High score indicates automated behavior. Score: ' + score + '/10.';
+                        readyButton.style.display = 'inline-block';
+                        readyButton.textContent = 'Try Again';
+                        readyButton.disabled = false;
+                        const lockScoreEl3 = document.getElementById('lockScore');
+                        const lockAttemptsEl3 = document.getElementById('lockAttempts');
+                        if (lockScoreEl3) lockScoreEl3.value = score;
+                        if (lockAttemptsEl3) lockAttemptsEl3.value = attempts;
+                    }
+
+                    clickButton.style.display = 'none';
+                }
+        
+        // Save submission to localStorage (admin view) and prevent submission if lock not completed
+        function saveSubmissionToLocal() {
+            const data = {
+                name: document.getElementById('name').value || '',
+                email: document.getElementById('email').value || '',
+                purpose: document.getElementById('purpose').value || '',
+                captcha1: document.getElementById('captcha1').value || '',
+                captcha2: document.getElementById('captcha2').value || '',
+                lockScore: document.getElementById('lockScore').value || '',
+                lockAttempts: document.getElementById('lockAttempts').value || '',
+                lockResult: document.getElementById('lockResult').value || '',
+                comments: document.getElementById('comments') ? document.getElementById('comments').value : '',
+                timestamp: new Date().toISOString()
+            };
+            const key = 'submissions';
+            try {
+                const existing = JSON.parse(localStorage.getItem(key) || '[]');
+                existing.push(data);
+                localStorage.setItem(key, JSON.stringify(existing));
+            } catch (err) {
+                console.error('Could not save submission', err);
+            }
+        }
+
+        form.addEventListener('submit', function(e) {
+            if (lockResult.value !== 'success') {
+                e.preventDefault();
+                alert('Please complete all CAPTCHA levels, including the lock circle timing game, before submitting!');
+                readyButton.focus();
+            } else {
+                // Save locally for admin review, then allow normal submission to proceed
+                try {
+                    saveSubmissionToLocal();
+                } catch (err) {
+                    console.error('Error saving submission locally', err);
+                }
+                // allow form to submit to its action (httpbin.org/post)
+            }
+        });
+    </script>
 </body>
 </html>
